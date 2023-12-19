@@ -6,9 +6,7 @@ import { Navbar, Nav, Button, Table, Modal, Form, Tab, Tabs, Row, Container, Col
 import { productSchema } from '../validations/userController';
 
 function AdminPage() {
-  // State for "Update User" modal
   const [showUpdateUserModal, setShowUpdateUserModal] = useState(false);
-  // State for "Update Product" modal
   const [showUpdateProductModal, setShowUpdateProductModal] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [userData, setUserData] = useState([]);
@@ -30,22 +28,24 @@ function AdminPage() {
     address: '',
     role: '',
     email: '',
+    profile_pic: '',
   });
 
   const handleUpdateUserClick = (user) => {
-    setSelectedProductId(user.id);
+    setSelectedProductId(user.user_id);
 
     setUpdateUserData({
-      id: user.user_id,
+      user_id: user.user_id,
       name: user.name,
       username: user.username,
       birthdate: user.birthdate,
       address: user.address,
       role: user.role,
       email: user.email,
+      profile_pic: user.profile_pic,
     });
 
-    setShowUpdateUserModal(true); // Show the "Update User" modal
+    setShowUpdateUserModal(true);
   };
 
   const handleUpdateUser = async () => {
@@ -60,6 +60,7 @@ function AdminPage() {
         address: updateUserData.address,
         role: updateUserData.role,
         email: updateUserData.email,
+        profile_pic: updateUserData.profile_pic,
       };
   
       const response = await axios.put(`http://localhost:3000/update/${tableName}/${primaryKey}`, updateData);
@@ -100,7 +101,7 @@ function AdminPage() {
       product_qty: product.product_qty,
     });
 
-    setShowUpdateProductModal(true); // Show the "Update Product" modal
+    setShowUpdateProductModal(true);
   };
 
   const handleUpdate = async () => {
@@ -202,7 +203,9 @@ function AdminPage() {
   const handleDelete = async (itemId, itemType) => {
     try {
       const response = await axios.delete(`http://localhost:3000/delete/${itemType}/${itemId}`);
-      
+  
+      console.log('Delete Response:', response);
+  
       if (response && response.data && response.data.Status === 'Item deleted successfully') {
         alert(response.data.Status);
   
@@ -220,6 +223,7 @@ function AdminPage() {
       console.error('Error deleting item:', error);
     }
   };
+  
 
   useEffect(() => {
     fetch('http://localhost:3000/data')
@@ -284,7 +288,7 @@ function AdminPage() {
                       <td>{user.email}</td>
                       <td>
                         <Button variant="success" onClick={() => handleUpdateUserClick(user)}>Update</Button>
-                        <Button variant="danger"  onClick={() => handleDelete(user.id, 'user')}>Delete</Button>
+                        <Button variant="danger" onClick={() => user.user_id && handleDelete(user.user_id, 'user')}>Delete</Button>
                       </td>
                     </tr>
                   ))}
@@ -457,6 +461,16 @@ function AdminPage() {
                 name="email"
                 value={updateUserData.email}
                 onChange={(e) => setUpdateUserData({ ...updateUserData, email: e.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group className='mt-2'>
+              <Form.Label>Profile Picture Link</Form.Label>
+              <Form.Control
+                type="text"
+                name="email"
+                value={updateUserData.profile_pic}
+                onChange={(e) => setUpdateUserData({ ...updateUserData, profile_pic: e.target.value })}
               />
             </Form.Group>
 

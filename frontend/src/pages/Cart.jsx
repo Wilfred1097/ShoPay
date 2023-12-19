@@ -21,7 +21,6 @@ const CartPage = () => {
         const data = await response.json();
         setLoading(false);
         
-        // Assuming data is in the format { data: [...cartItems] }
         if (data && data.data) {
           setCartItems(data.data);
           console.log(data);
@@ -42,23 +41,20 @@ const CartPage = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            credentials: 'include', // Include cookies (which should include the authentication token)
+            credentials: 'include',
             body: JSON.stringify({ cartId: item.cart_id, productName: item.product_name }),
         });
   
       if (!response.ok) {
-        const errorData = await response.json(); // Try to parse the error response
+        const errorData = await response.json();
         throw new Error(`Error initiating checkout: ${response.status} - ${errorData.message}`);
       }
   
-      // Handle success, e.g., show a success message or update the UI
-      console.log('Checkout successful');
+      alert('Checkout Successfully');
       setTimeout(() => {
         window.location.reload();
-      }, 100);
+      }, 500);
   
-      // After successful checkout, you may want to update the cart in the frontend
-      // For example, remove the item from the cartItems state
       setCartItems((prevItems) => prevItems.filter((cartItem) => cartItem.cart_id !== item.cart_id));
     } catch (error) {
       console.error('Error initiating checkout:', error.message);

@@ -9,7 +9,6 @@ import cookieParser from 'cookie-parser';
 const salt = 10;
 dotenv.config();
 
-// Middleware function to extract user ID from the token
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
 
@@ -26,7 +25,6 @@ const authenticateToken = (req, res, next) => {
       }
     }
 
-    // Add the user ID to the request object
     req.userId = user.userId;
     next();
   });
@@ -71,9 +69,8 @@ db.connect((err) => {
 app.post('/register', (req, res) => {
     const checkEmailQuery = "SELECT * FROM users WHERE email = ?";
     const checkUsernameQuery = "SELECT * FROM users WHERE username = ?";
-    const insertUserQuery = "INSERT INTO users (`name`, `username`, `birthdate`, `address`, `role`, `email`, `password`) VALUES (?)";
+    const insertUserQuery = "INSERT INTO users (`name`, `username`, `birthdate`, `address`, `role`, `email`, `password`, `profile_pic`) VALUES (?)";
 
-    // Check if the email already exists
     db.query(checkEmailQuery, [req.body.email], (errEmail, resultEmail) => {
         if (errEmail) {
             console.error("Error checking email:", errEmail);
@@ -84,7 +81,6 @@ app.post('/register', (req, res) => {
             return res.json({ Status: "Email already exists" });
         }
 
-        // Check if the username already exists
         db.query(checkUsernameQuery, [req.body.username], (errUsername, resultUsername) => {
             if (errUsername) {
                 console.error("Error checking username:", errUsername);
@@ -95,7 +91,6 @@ app.post('/register', (req, res) => {
                 return res.json({ Status: "Username already exists" });
             }
 
-            // Hash the password and insert the user into the database
             bcrypt.hash(req.body.password.toString(), salt, (hashErr, hash) => {
                 if (hashErr) {
                     console.error("Error hashing password:", hashErr);
@@ -109,10 +104,10 @@ app.post('/register', (req, res) => {
                     req.body.address,
                     req.body.role,
                     req.body.email,
-                    hash
+                    hash,
+                    req.body.profile_pic
                 ];
 
-                // Insert the user into the database
                 db.query(insertUserQuery, [values], (insertErr, insertResult) => {
                     if (insertErr) {
                         console.error("Error inserting user:", insertErr);
@@ -125,6 +120,7 @@ app.post('/register', (req, res) => {
         });
     });
 });
+
 //Login
 app.post('/login', (req, res) => {
   const sql = 'SELECT * FROM users WHERE email = ?';
@@ -137,10 +133,9 @@ app.post('/login', (req, res) => {
 
               if (response) {
                   const name = data[0].name;
-                  const userId = data[0].user_id; // Retrieve the user ID
+                  const userId = data[0].user_id; 
                   const userRole = data[0].role;
 
-                  // Set the appropriate secret key based on the user role
                   let secretKey;
                   if (userRole === 'admin') {
                     if (!process.env.ADMIN_TOKEN) {
@@ -156,7 +151,6 @@ app.post('/login', (req, res) => {
                       return res.json({ Error: "Invalid user role" });
                   }
                   
-                  // Sign the token using the selected secret key
                   const token = jwt.sign({ userId, name }, secretKey, { expiresIn: '1d' });
                   res.cookie('token', token);
 
@@ -170,16 +164,14 @@ app.post('/login', (req, res) => {
       }
   });
 });
+
 //Profile and Purchase History
 app.get('/profile', authenticateToken, (req, res) => {
   const userId = req.userId;
 
-  // Query to fetch user information
   const getUserQuery = 'SELECT * FROM users WHERE user_id = ?';
-  // Query to fetch purchased items
   const getPurchaseQuery = 'SELECT product_name, quantity, purchased_date FROM purchase WHERE user_id = ?';
 
-  // Execute both queries
   db.query(getUserQuery, [userId], (userErr, userResult) => {
     if (userErr) {
       console.error('Error executing MySQL query for user information:', userErr);
@@ -189,7 +181,6 @@ app.get('/profile', authenticateToken, (req, res) => {
 
     const user = userResult[0];
 
-    // Execute the query for purchased items
     db.query(getPurchaseQuery, [userId], (purchaseErr, purchaseResult) => {
       if (purchaseErr) {
         console.error('Error executing MySQL query for purchased items:', purchaseErr);
@@ -203,13 +194,13 @@ app.get('/profile', authenticateToken, (req, res) => {
         purchased_date: item.purchased_date,
       }));
 
-      // Combine user information and purchased items in the response
       res.json({
         userId: user.user_id,
         name: user.name,
         username: user.username,
         address: user.address,
         email: user.email,
+        profile_pic: user.profile_pic,
         purchasedItems: purchasedItems,
       });
     });
@@ -217,15 +208,15 @@ app.get('/profile', authenticateToken, (req, res) => {
 });
 
 
- 
 //Logout
 app.post('/logout', (req, res) => {
     res.cookie('token', '', { expires: new Date(0) });
     return res.json({ Status: 'Success' });
 });
+
 //get all user
 app.get('/data', (req, res) => {
-    const query = 'SELECT * FROM users'; // Replace with your actual table name
+    const query = 'SELECT * FROM users'; 
   
     db.query(query, (err, result) => {
       if (err) {
@@ -237,6 +228,7 @@ app.get('/data', (req, res) => {
       res.json(result);
     });
   });
+
 //get Product
 app.get('/product', (req, res) => {
 const query = 'SELECT * FROM product';
@@ -251,13 +243,13 @@ db.query(query, (err, result) => {
     res.json(result);
     });
 });
+
 //add Product
 app.post('/add_product', async (req, res) => {
     const checkProductNameQuery = "SELECT * FROM product WHERE product_name = ?";
     const insertProductQuery = "INSERT INTO product (`product_name`, `product_description`, `product_photo`, `product_price`, `product_qty`) VALUES (?)";
   
     try {
-      // Check if the product name already exists
       db.query(checkProductNameQuery, [req.body.product_name], (errProductName, resultProductName) => {
         if (errProductName) {
           console.error("Error checking product name:", errProductName);
@@ -268,7 +260,6 @@ app.post('/add_product', async (req, res) => {
           return res.json({ Status: "Product name already exists" });
         }
   
-        // Product name doesn't exist, proceed to insert the product into the database
         const values = [
           req.body.product_name,
           req.body.product_description,
@@ -277,13 +268,11 @@ app.post('/add_product', async (req, res) => {
           req.body.product_qty,
         ];
   
-        // Insert the product into the database
         db.query(insertProductQuery, [values], (insertErr, insertResult) => {
           if (insertErr) {
             console.error("Error inserting product:", insertErr);
             return res.status(500).json({ Error: "Internal Server Error" });
           }
-          db.end();
           return res.status(201).json({ Status: "Product added successfully" });
         });
       });
@@ -292,74 +281,81 @@ app.post('/add_product', async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
 });
-app.delete('/delete/:itemType/:itemId', (req, res) => {
-    const { itemType, itemId } = req.params;
-    let tableName;
 
-    if (itemType === 'user') {
-        tableName = 'users';
-    } else if (itemType === 'product') {
-        tableName = 'product';
-    } else {
-        return res.status(400).json({ Error: 'Invalid item type' });
+//delete Record
+app.delete('/delete/:itemType/:itemId', (req, res) => {
+  const { itemType, itemId } = req.params;
+
+  if (isNaN(itemId)) {
+    return res.status(400).json({ Error: 'Invalid item ID' });
+  }
+
+  let tableName;
+
+  if (itemType === 'user') {
+    tableName = 'users';
+  } else if (itemType === 'product') {
+    tableName = 'product';
+  } else {
+    return res.status(400).json({ Error: 'Invalid item type' });
+  }
+
+  const deleteQuery = `DELETE FROM ?? WHERE ?? = ?`;
+
+  db.query(deleteQuery, [tableName, itemType === 'user' ? 'user_id' : 'product_id', itemId], (err, result) => {
+    if (err) {
+      console.error('Error deleting item:', err);
+      return res.status(500).json({ Error: 'Internal Server Error' });
     }
 
-    const deleteQuery = `DELETE FROM ${tableName} WHERE ${itemType === 'user' ? 'id' : 'product_id'} = ?`;
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ Error: 'Item not found' });
+    }
 
-    db.query(deleteQuery, [itemId], (err, result) => {
-        if (err) {
-            console.error('Error deleting item:', err);
-            return res.status(500).json({ Error: 'Internal Server Error' });
-        }
-
-        return res.json({ Status: 'Item deleted successfully' });
-    });
+    return res.json({ Status: 'Item deleted successfully' });
+  });
 });
 
+//Updating record
 app.put('/update/:tableName/:id', async (req, res) => {
-    const tableName = req.params.tableName;
-    const id = req.params.id;
-  
-    // Determine the update query and corresponding values based on the table name
-    let updateQuery, values;
-  
-    if (tableName === 'product') {
-      updateQuery = "UPDATE product SET product_name=?, product_description=?, product_price=?, product_qty=? WHERE product_id=?";
-      values = [req.body.product_name, req.body.product_description, req.body.product_price, req.body.product_qty, id];
-    } else if (tableName === 'users') {
-      updateQuery = "UPDATE users SET name=?, username=?, birthdate=?, address=?, role=?, email=? WHERE user_id=?";
-      values = [req.body.name, req.body.username, req.body.birthdate, req.body.address, req.body.role, req.body.email, id];
-    } else {
-      return res.status(400).json({ Error: "Invalid table name" });
-    }
-  
-    try {
-      // Update the record in the database
-      db.query(updateQuery, values, (updateErr, updateResult) => {
-        if (updateErr) {
-          console.error(`Error updating record in ${tableName} table:`, updateErr);
-          return res.status(500).json({ Error: "Internal Server Error" });
-        }
-  
-        return res.status(200).json({ Status: `${tableName} record updated successfully` });
-      });
-    } catch (error) {
-      console.error(`Error updating record in ${tableName} table:`, error.message);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
+  const tableName = req.params.tableName;
+  const id = req.params.id;
+  let updateQuery, values;
 
-// Endpoint to fetch product details based on product ID
+  if (tableName === 'product') {
+    updateQuery = "UPDATE product SET product_name=?, product_description=?, product_price=?, product_qty=? WHERE product_id=?";
+    values = [req.body.product_name, req.body.product_description, req.body.product_price, req.body.product_qty, id];
+  } else if (tableName === 'users') {
+    updateQuery = "UPDATE users SET name=?, username=?, birthdate=?, address=?, role=?, email=?, profile_pic=? WHERE user_id=?";
+    values = [req.body.name, req.body.username, req.body.birthdate, req.body.address, req.body.role, req.body.email, req.body.profile_pic, id];
+  } else {
+    return res.status(400).json({ Error: "Invalid table name" });
+  }
+
+  try {
+    db.query(updateQuery, values, (updateErr, updateResult) => {
+      if (updateErr) {
+        console.error(`Error updating record in ${tableName} table:`, updateErr);
+        return res.status(500).json({ Error: "Internal Server Error" });
+      }
+
+      return res.status(200).json({ Status: `${tableName} record updated successfully` });
+    });
+  } catch (error) {
+    console.error(`Error updating record in ${tableName} table:`, error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+//fetch product details based on product ID
 app.get('/product/:id', (req, res) => {
   const productId = parseInt(req.params.id, 10);
 
-  // Check if productId is a valid integer
   if (isNaN(productId)) {
     res.status(400).json({ error: 'Invalid product ID' });
     return;
   }
 
-  // Modify the SQL query to select the specific product based on the product ID
   const getProductQuery = 'SELECT * FROM product WHERE product_id = ?';
 
   db.query(getProductQuery, [productId], (err, result) => {
@@ -370,15 +366,12 @@ app.get('/product/:id', (req, res) => {
     }
 
     if (result.length === 0) {
-      // If no product is found with the given ID, return a 404 status
       res.status(404).json({ error: 'Product not found' });
       return;
     }
 
-    // Assuming there is only one product with the given ID
     const product = result[0];
 
-    // Display product information
     res.json({
       product_id: product.product_id,
       product_name: product.product_name,
@@ -386,16 +379,14 @@ app.get('/product/:id', (req, res) => {
       product_photo: product.product_photo,
       product_price: product.product_price,
       product_qty: product.product_qty,
-      // Add other product information as needed
     });
   });
 });
 // Add to Cart
 app.post('/add-to-cart', authenticateToken, (req, res) => {
   const userId = req.userId;
-  const productId = req.body.productId; // Assuming the product ID is sent in the request body
+  const productId = req.body.productId;
 
-  // Check if the product is already in the user's cart
   const checkCartQuery = 'SELECT * FROM cart WHERE user_id = ? AND product_ids = ?';
   db.query(checkCartQuery, [userId, productId], (checkErr, checkResult) => {
     if (checkErr) {
@@ -404,24 +395,34 @@ app.post('/add-to-cart', authenticateToken, (req, res) => {
     }
 
     if (checkResult.length > 0) {
-      // If the product is already in the cart, you might want to handle this case
       return res.json({ status: 'Product already in the cart' });
     }
 
-    // If the product is not in the cart, add it
-    const addToCartQuery = 'INSERT INTO cart (user_id, product_ids, quantity) VALUES (?, ?, 1)';
-    db.query(addToCartQuery, [userId, productId], (addErr, addResult) => {
-      if (addErr) {
-        console.error('Error adding to cart:', addErr);
-        return res.status(500).json({ error: 'Internal Server Error - Add to Cart' });
+    const checkProductQuantityQuery = 'SELECT * FROM product WHERE product_id = ? AND product_qty >= 1';
+    db.query(checkProductQuantityQuery, [productId], (quantityErr, quantityResult) => {
+      if (quantityErr) {
+        console.error('Error checking product quantity:', quantityErr);
+        return res.status(500).json({ error: 'Internal Server Error - Check Product Quantity' });
       }
 
-      return res.json({ status: 'Product added to cart successfully' });
+      if (quantityResult.length === 0) {
+        return res.json({ status: 'Product quantity is not sufficient' });
+      }
+
+      const addToCartQuery = 'INSERT INTO cart (user_id, product_ids, quantity) VALUES (?, ?, 1)';
+      db.query(addToCartQuery, [userId, productId], (addErr, addResult) => {
+        if (addErr) {
+          console.error('Error adding to cart:', addErr);
+          return res.status(500).json({ error: 'Internal Server Error - Add to Cart' });
+        }
+
+        return res.json({ status: 'Product added to cart successfully' });
+      });
     });
   });
 });
 
-// Endpoint to fetch cart products based on user ID
+// fetch cart products based on user ID
 app.get('/cart', authenticateToken, (req, res) => {
   const userId = req.userId;
 
@@ -438,7 +439,6 @@ app.get('/cart', authenticateToken, (req, res) => {
       });
     }
 
-    // Assuming result is an array of rows from the query
     const cartProducts = result.map((row) => ({
       cart_id: row.cart_id,
       product_id: row.product_id,
@@ -448,11 +448,7 @@ app.get('/cart', authenticateToken, (req, res) => {
       quantity: row.quantity,
     }));
 
-    // Send the JSON-formatted result in the response
     res.json({ data: cartProducts });
-
-    // Avoid logging sensitive information in a production environment
-    // console.log('Cart products fetched successfully:', cartProducts);
   });
 });
 
@@ -462,16 +458,10 @@ app.post('/checkout', authenticateToken, async (req, res) => {
   const userId = req.userId;
 
   try {
-    // Perform the checkout process, update checkout table, and product table
-    // Example SQL queries:
-    
-    // Insert into Purchase table (assuming Purchase is your checkout table)
     await db.query('INSERT INTO purchase (user_id, product_name, quantity) VALUES (?, ?, ?)', [userId, productName, 1]);
 
-    // Update Product table to reduce quantity
     await db.query('UPDATE product SET product_qty = product_qty - 1 WHERE product_name = ?', [productName]);
 
-    // Delete the record from CartProductView using cartId
     await db.query('DELETE FROM cart WHERE cart_id = ?', [cartId]);
 
     res.json({ success: true });

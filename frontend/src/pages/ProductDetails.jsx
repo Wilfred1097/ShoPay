@@ -1,17 +1,14 @@
-// ProductDetails.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import CustomNavbar from './NavigationBar';
 import { Card, Image, Container, Row, Col, Button } from 'react-bootstrap';
 
 function ProductDetails() {
-  // Extract the product ID from the URL params
   const { id } = useParams();
   const [productDetails, setProductDetails] = useState(null);
   const [status, setStatus] = useState('');
 
   useEffect(() => {
-    // Fetch product details based on the product_id
     fetch(`http://localhost:3000/product/${id}`)
       .then((response) => response.json())
       .then((responseData) => {
@@ -34,7 +31,7 @@ function ProductDetails() {
       });
 
       const data = await response.json();
-      setStatus(data.status);
+      alert(data.status);
     } catch (error) {
       console.error('Error adding to cart:', error);
       setStatus('Error adding to cart');

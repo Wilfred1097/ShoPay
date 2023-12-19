@@ -19,28 +19,6 @@ function Dashboard() {
       });
   }, []);
 
-    const handleLogout = () => {
-        fetch('http://localhost:3000/logout', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.Status === 'Success') {
-                console.log('Logout Successfully');
-                navigate('/');
-            } else {
-                console.error('Logout failed');
-            }
-        })
-        .catch(error => {
-            console.error('Error during logout:', error);
-        });
-    };
-
   return (
     <>
     <div>

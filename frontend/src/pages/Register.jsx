@@ -14,6 +14,7 @@ function Register() {
     role: 'user',
     password: '',
     confirmPassword: '',
+    profile_pic: '',
   });
 
   const navigate = useNavigate();
@@ -107,6 +108,16 @@ function Register() {
                     name="address"
                     placeholder="Address"
                     onChange={(e) => setValues({ ...values, address: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Group className='mt-2'>
+                  <Form.Label>Profile Picture</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="profile"
+                    placeholder='Profile Picture Link'
+                    onChange={(e) => setValues({ ...values, profile_pic: e.target.value })}
                   />
                 </Form.Group>
 

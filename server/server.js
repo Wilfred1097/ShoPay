@@ -30,6 +30,9 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+app.get("/", (req, res) => {
+  res.json("Hello");
+})
 
 const app = express();
 const port = 3000;

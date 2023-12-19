@@ -9,7 +9,7 @@ const CartPage = () => {
   useEffect(() => {
     const fetchCartData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/cart', {
+        const response = await fetch('https://shopay-server.vercel.app/cart', {
           method: 'GET',
           credentials: 'include',
         });
@@ -36,7 +36,7 @@ const CartPage = () => {
 
   const handleCheckout = async (item) => {
     try {
-        const response = await fetch('http://localhost:3000/checkout', {
+        const response = await fetch('https://shopay-server.vercel.app/checkout', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

@@ -64,6 +64,9 @@ db.connect((err) => {
     }
 });
 
+app.get("/", (req, res) => {
+  res.json("Hello");
+})
 
 // Registration
 app.post('/register', (req, res) => {

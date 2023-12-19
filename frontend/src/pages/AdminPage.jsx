@@ -226,7 +226,7 @@ function AdminPage() {
   
 
   useEffect(() => {
-    fetch('http://localhost:3000/data')
+    fetch('https://shopay-server.vercel.app/data')
       .then((response) => response.json())
       .then((responseData) => {
         setUserData(responseData);
@@ -237,7 +237,7 @@ function AdminPage() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3000/product')
+    fetch('https://shopay-server.vercel.app/product')
       .then((response) => response.json())
       .then((responseData) => {
         setProductData(responseData);

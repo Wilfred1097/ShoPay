@@ -9,6 +9,19 @@ import cookieParser from 'cookie-parser';
 const salt = 10;
 dotenv.config();
 
+const app = express();
+
+app.use(cors({
+  origin: "https://shopay-client.vercel.app",
+  methods: ["POST", "GET", "PUT"],
+  credentials: true
+}));
+
+app.options('*', cors());
+
+app.use(express.json());
+app.use(cookieParser());
+
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
 
@@ -29,17 +42,6 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
-
-const app = express();
-
-app.use(cors({
-  origin: "https://shopay-client.vercel.app",
-  methods: ["POST", "GET", "PUT"],
-  credentials: true
-}));
-
-app.use(express.json());
-app.use(cookieParser());
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -269,7 +271,6 @@ app.post('/add_product', async (req, res) => {
     }
 });
 
-
 //delete Record
 app.delete('/delete/:itemType/:itemId', (req, res) => {
   const { itemType, itemId } = req.params;
@@ -370,6 +371,7 @@ app.get('/product/:id', (req, res) => {
     });
   });
 });
+
 // Add to Cart
 app.post('/add-to-cart', authenticateToken, (req, res) => {
   const userId = req.userId;

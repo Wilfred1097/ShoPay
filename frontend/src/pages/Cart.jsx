@@ -9,7 +9,7 @@ const CartPage = () => {
   useEffect(() => {
     const fetchCartData = async () => {
       try {
-        const response = await fetch('https://shopay-api.vercel.app/cart', {
+        const response = await fetch('http://localhost:3000/cart', {
           method: 'GET',
           credentials: 'include',
         });
@@ -23,7 +23,6 @@ const CartPage = () => {
         
         if (data && data.data) {
           setCartItems(data.data);
-          console.log(data);
         }
       } catch (error) {
         console.error('Error fetching cart data:', error);

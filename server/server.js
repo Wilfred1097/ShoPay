@@ -1,7 +1,7 @@
 import express, { response } from 'express';
 import mysql from 'mysql';
 import cors from 'cors'; 
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser';
@@ -32,10 +32,11 @@ const authenticateToken = (req, res, next) => {
 
 const app = express();
 app.use(cors({
-  origin: ["http://localhost:5173"],
-  methods: ["POST", "GET", "PUT" ],
+  origin: "http://localhost:5173",
+  methods: ["POST", "GET", "PUT"],
   credentials: true
 }));
+
 const port = 3000;
 
 app.use(express.json());
@@ -85,12 +86,7 @@ app.post('/register', (req, res) => {
                 return res.json({ Status: "Username already exists" });
             }
 
-            bcrypt.hash(req.body.password.toString(), salt, (hashErr, hash) => {
-                if (hashErr) {
-                    console.error("Error hashing password:", hashErr);
-                    return res.status(500).json({ Error: "Internal Server Error" });
-                }
-
+            bcrypt.hash(req.body.password.toString(), salt).then((hash) => {
                 const values = [
                     req.body.name,
                     req.body.username,
@@ -110,6 +106,9 @@ app.post('/register', (req, res) => {
 
                     return res.json({ Status: "Success" });
                 });
+            }).catch((hashErr) => {
+              console.error("Error hashing password:", hashErr);
+              return res.status(500).json({ Error: "Internal Server Error" });
             });
         });
     });
@@ -122,7 +121,8 @@ app.post('/login', (req, res) => {
       if (err) return res.json({ Error: "Login error in server" });
 
       if (data.length > 0) {
-          bcrypt.compare(req.body.password.toString(), data[0].password, (err, response) => {
+        bcrypt.compare(req.body.password.toString(), data[0].password)
+          .then((response) => {
               if (err) return res.json({ Error: "Password compare error" });
 
               if (response) {
@@ -152,6 +152,9 @@ app.post('/login', (req, res) => {
               } else {
                   return res.json({ Error: "Password not matched" });
               }
+          }).catch((compareErr) => {
+            console.error("Password compare error:", compareErr);
+            return res.status(500).json({ Error: "Internal Server Error" });
           });
       } else {
           return res.json({ Error: "No email existed" });

@@ -32,7 +32,7 @@ const authenticateToken = (req, res, next) => {
 
 const app = express();
 app.use(cors({
-  origin: "https://shopay-client.vercel.app/",
+  origin: "https://shopay-client.vercel.app",
   methods: ["POST", "GET", "PUT"],
   credentials: true
 }));

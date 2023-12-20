@@ -354,50 +354,39 @@ app.put('/update/:tableName/:id', async (req, res) => {
 
 
 //fetch product details based on product ID
-app.get('/product/:id', async (req, res) => {
+app.get('/product/:id', (req, res) => {
   const productId = parseInt(req.params.id, 10);
 
   if (isNaN(productId)) {
-      res.status(400).json({ error: 'Invalid product ID' });
-      return;
+    res.status(400).json({ error: 'Invalid product ID' });
+    return;
   }
 
   const getProductQuery = 'SELECT * FROM product WHERE product_id = ?';
 
-  try {
-      const connection = await pool.getConnection();
+  db.query(getProductQuery, [productId], (err, result) => {
+    if (err) {
+      console.error('Error executing MySQL query:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
 
-      try {
-          connection.query(getProductQuery, [productId], (err, result) => {
-              if (err) {
-                  console.error('Error executing MySQL query:', err);
-                  res.status(500).json({ error: 'Internal Server Error' });
-                  return;
-              }
+    if (result.length === 0) {
+      res.status(404).json({ error: 'Product not found' });
+      return;
+    }
 
-              if (result.length === 0) {
-                  res.status(404).json({ error: 'Product not found' });
-                  return;
-              }
+    const product = result[0];
 
-              const product = result[0];
-
-              res.json({
-                  product_id: product.product_id,
-                  product_name: product.product_name,
-                  product_description: product.product_description,
-                  product_photo: product.product_photo,
-                  product_price: product.product_price,
-                  product_qty: product.product_qty,
-              });
-          });
-      } finally {
-          connection.release();
-      }
-  } catch (error) {
-      console.error('Error fetching product details:', error.message);
-      res.status(500).json({ message: 'Internal server error' });
-  }
+    res.json({
+      product_id: product.product_id,
+      product_name: product.product_name,
+      product_description: product.product_description,
+      product_photo: product.product_photo,
+      product_price: product.product_price,
+      product_qty: product.product_qty,
+    });
+  });
 });
 
 

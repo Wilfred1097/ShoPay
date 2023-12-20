@@ -58,13 +58,10 @@ db.connect((err) => {
     if (err) {
         console.error('Error connecting to database');
     } else {
-        console.log('Connected to the database');
+      res.json("Hello");
+      console.log('Connected to the database');
     }
 });
-
-app.get("/", (req, res) => {
-  res.json("Hello");
-})
 
 // Registration
 app.post('/register', (req, res) => {

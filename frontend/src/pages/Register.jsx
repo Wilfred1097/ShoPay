@@ -24,7 +24,7 @@ function Register() {
 
     try {
       await registrationSchema.validate(values, { abortEarly: false });
-      const response = await axios.post('https://shopay-server.vercel.app/register', values);
+      const response = await axios.post('https://shopay-backend.vercel.app/register', values);
 
       if (response && response.data && response.data.Status === 'Success') {
         navigate('/login');

@@ -16,7 +16,7 @@ function Profile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://shopay-server.vercel.app/profile', {
+        const response = await fetch('https://shopay-backend.vercel.app/profile', {
           method: 'GET',
           credentials: 'include',
         });

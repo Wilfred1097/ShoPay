@@ -51,11 +51,13 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        console.error('Error connecting to database');
+        console.error('Error connecting to the database', err);
+        process.exit(1); // Terminate the application
     } else {
         console.log('Connected to the database');
     }
 });
+
 
 // Registration
 app.post('/register', (req, res) => {
@@ -240,39 +242,32 @@ db.query(query, (err, result) => {
 app.post('/add_product', async (req, res) => {
     const checkProductNameQuery = "SELECT * FROM product WHERE product_name = ?";
     const insertProductQuery = "INSERT INTO product (`product_name`, `product_description`, `product_photo`, `product_price`, `product_qty`) VALUES (?)";
-  
+
     try {
-      db.query(checkProductNameQuery, [req.body.product_name], (errProductName, resultProductName) => {
-        if (errProductName) {
-          console.error("Error checking product name:", errProductName);
-          return res.status(500).json({ Error: "Internal Server Error" });
-        }
-  
+        const resultProductName = await db.query(checkProductNameQuery, [req.body.product_name]);
+
         if (resultProductName.length > 0) {
-          return res.json({ Status: "Product name already exists" });
+            return res.json({ Status: "Product name already exists" });
         }
-  
+
         const values = [
-          req.body.product_name,
-          req.body.product_description,
-          req.body.product_photo,
-          req.body.product_price,
-          req.body.product_qty,
+            req.body.product_name,
+            req.body.product_description,
+            req.body.product_photo,
+            req.body.product_price,
+            req.body.product_qty,
         ];
-  
-        db.query(insertProductQuery, [values], (insertErr, insertResult) => {
-          if (insertErr) {
-            console.error("Error inserting product:", insertErr);
-            return res.status(500).json({ Error: "Internal Server Error" });
-          }
-          return res.status(201).json({ Status: "Product added successfully" });
-        });
-      });
+
+        const insertResult = await db.query(insertProductQuery, [values]);
+
+        return res.status(201).json({ Status: "Product added successfully" });
+
     } catch (error) {
-      console.error('Error adding product:', error.message);
-      res.status(500).json({ message: 'Internal server error' });
+        console.error('Error adding product:', error.message);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 //delete Record
 app.delete('/delete/:itemType/:itemId', (req, res) => {

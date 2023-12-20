@@ -30,21 +30,16 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-app.get("/", (req, res) => {
-  res.json("Hello");
-})
-
 const app = express();
+app.use(cors({
+  origin: ["http://localhost:5173"],
+  methods: ["POST", "GET", "PUT" ],
+  credentials: true
+}));
 const port = 3000;
 
 app.use(express.json());
 app.use(cookieParser());
-
-app.use(cors({
-    origin: ["https://shopay-client.vercel.app"],
-    methods: ["POST", "GET", "PUT" ],
-    credentials: true
-}));
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -58,8 +53,7 @@ db.connect((err) => {
     if (err) {
         console.error('Error connecting to database');
     } else {
-      res.json("Hello");
-      console.log('Connected to the database');
+        console.log('Connected to the database');
     }
 });
 

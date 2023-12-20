@@ -9,7 +9,7 @@ function ProductDetails() {
   const [status, setStatus] = useState('');
 
   useEffect(() => {
-    fetch(`https://shopay-api.vercel.app/product/${id}`)
+    fetch(`http://localhost:3000/product/${id}`)
       .then((response) => response.json())
       .then((responseData) => {
         setProductDetails(responseData);
@@ -21,7 +21,7 @@ function ProductDetails() {
 
   const addToCart = async () => {
     try {
-      const response = await fetch('https://shopay-api.vercel.app/add-to-cart', {
+      const response = await fetch('http://localhost:3000/add-to-cart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

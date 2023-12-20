@@ -19,7 +19,7 @@ function Login() {
     try {
       await loginSchema.validate(values, { abortEarly: false });
 
-      const response = await axios.post('https://shopay-api.vercel.app/login', values);
+      const response = await axios.post('http://localhost:3000/login', values);
 
       if (response.data.Status === 'Success') {
         console.log("Login Successfully");

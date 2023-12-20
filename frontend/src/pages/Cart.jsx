@@ -36,7 +36,7 @@ const CartPage = () => {
 
   const handleCheckout = async (item) => {
     try {
-        const response = await fetch('https://shopay-api.vercel.app/checkout', {
+        const response = await fetch('http://localhost:3000/checkout', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

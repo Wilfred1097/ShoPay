@@ -1,6 +1,5 @@
 import express, { response } from 'express';
 import mysql from 'mysql';
-import cors from 'cors'; 
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
@@ -10,9 +9,9 @@ const salt = 10;
 dotenv.config();
 
 const app = express();
-
+const cors = require('cors');
 app.use(cors({
-  origin: "https://shopay-client.vercel.app",
+  origin: "*",
   methods: ["POST", "GET", "PUT"],
   credentials: true
 }));

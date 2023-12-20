@@ -43,10 +43,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 const db = mysql.createConnection({
-    host: bka1fpmufy6pskxgqv5t-mysql.services.clever-cloud.com,
-    user: u01imdghwi9gwz2e,
-    password: pOCwkGu6YGJPpCnKIadB,
-    database: bka1fpmufy6pskxgqv5t,
+    host: "bka1fpmufy6pskxgqv5t-mysql.services.clever-cloud.com",
+    user: "u01imdghwi9gwz2e",
+    password: "pOCwkGu6YGJPpCnKIadB",
+    database: "bka1fpmufy6pskxgqv5t",
     port: process.env.DB_PORT,
 });
 

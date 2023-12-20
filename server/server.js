@@ -9,13 +9,6 @@ import cookieParser from 'cookie-parser';
 const salt = 10;
 dotenv.config();
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://shopay-client.vercel.app');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-});
-
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
 
@@ -37,21 +30,27 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-app.get("/", (req, res) => {
-  res.json("Hello");
-})
-
 const app = express();
-const port = 3000;
-
-app.use(express.json());
-app.use(cookieParser());
-
 app.use(cors({
     origin: ["https://shopay-client.vercel.app"],
     methods: ["POST", "GET", "PUT" ],
     credentials: true
 }));
+const port = 3000;
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://shopay-client.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
+app.get("/", (req, res) => {
+  res.json("Hello");
+})
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -63,12 +62,14 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        console.error('Error connecting to database');
+        console.error('Error connecting to the database', err);
+        process.exit(1); // Terminate the application
     } else {
-      res.json("Hello");
-      console.log('Connected to the database');
+        console.log('Connected to the database');
+        res.json("Hello");
     }
 });
+
 
 // Registration
 app.post('/register', (req, res) => {

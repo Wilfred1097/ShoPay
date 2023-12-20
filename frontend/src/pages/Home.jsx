@@ -9,7 +9,7 @@ function Dashboard() {
   const [productData, setProductData] = useState([]);
 
   useEffect(() => {
-    fetch('https://shopay-backend.vercel.app/product')
+    fetch('https://shopay-api.vercel.app/product')
       .then((response) => response.json())
       .then((responseData) => {
         setProductData(responseData);
@@ -20,7 +20,7 @@ function Dashboard() {
   }, []);
 
     const handleLogout = () => {
-        fetch('https://shopay-backend.vercel.app/logout', {
+        fetch('https://shopay-api.vercel.app/logout', {
             method: 'POST',
             credentials: 'include',
             headers: {

@@ -43,11 +43,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 const db = mysql.createConnection({
-    host: bka1fpmufy6pskxgqv5t-mysql.services.clever-cloud.com,
-    user: u01imdghwi9gwz2e,
-    password: pOCwkGu6YGJPpCnKIadB,
-    database: bka1fpmufy6pskxgqv5t,
-    port: process.env.DB_PORT,
+    host: "bka1fpmufy6pskxgqv5t-mysql.services.clever-cloud.com",
+    user: "u01imdghwi9gwz2e",
+    password: "pOCwkGu6YGJPpCnKIadB",
+    database: "bka1fpmufy6pskxgqv5t",
+    port: 3306,
 });
 
 db.connect((err) => {
@@ -463,5 +463,5 @@ app.post('/checkout', authenticateToken, async (req, res) => {
 
   
 app.listen(port, () => {
-    console.log("Server is running...");
+    console.log("Server is running on port", port);
 })

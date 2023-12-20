@@ -29,14 +29,21 @@ function ProductDetails() {
         credentials: 'include',
         body: JSON.stringify({ productId: parseInt(id, 10) }),
       });
-
+  
+      if (response.status === 401) {
+        // Handle the case where the user is not authenticated
+        alert('You must login first.');
+        return;
+      }
+  
       const data = await response.json();
       alert(data.status);
     } catch (error) {
-      console.error('Error adding to cart:', error);
-      setStatus('Error adding to cart');
+      // console.error('Error adding to cart:', error);
+      // setStatus('Error adding to cart');
     }
   };
+  
 
   if (!productDetails) {
     return <div>Loading...</div>;

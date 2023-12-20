@@ -36,18 +36,13 @@ app.get("/", (req, res) => {
 
 const app = express();
 const port = 3000;
-const corsOptions = {
-    origin: 'https://sho-pay-client.vercel.app/',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
-  };
-app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-    origin: ["https://sho-pay-client.vercel.app/"],
-    methods: ["POST", "GET"],
+    origin: ["https://sho-pay-client.vercel.app"],
+    methods: ["POST", "GET", "PUT" ],
     credentials: true
 }));
 

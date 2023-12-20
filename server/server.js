@@ -32,7 +32,7 @@ const authenticateToken = (req, res, next) => {
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://shopay-client.vercel.app",
   methods: ["POST", "GET", "PUT"],
   credentials: true
 }));
@@ -61,7 +61,7 @@ db.connect((err) => {
 
 
 // Registration
-app.post('/register', (req, res) => {
+app.post('/signup', (req, res) => {
     const checkEmailQuery = "SELECT * FROM users WHERE email = ?";
     const checkUsernameQuery = "SELECT * FROM users WHERE username = ?";
     const insertUserQuery = "INSERT INTO users (`name`, `username`, `birthdate`, `address`, `role`, `email`, `password`, `profile_pic`) VALUES (?)";

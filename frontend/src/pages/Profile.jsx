@@ -16,7 +16,7 @@ function Profile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/profile', {
+        const response = await fetch('https://shopay-backend-git-main-wilfred1097.vercel.app/profile', {
           method: 'GET',
           credentials: 'include',
         });

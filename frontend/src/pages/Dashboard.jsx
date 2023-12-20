@@ -9,7 +9,7 @@ function Dashboard() {
   const [productData, setProductData] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/product')
+    fetch('https://shopay-backend-git-main-wilfred1097.vercel.app/product')
       .then((response) => response.json())
       .then((responseData) => {
         setProductData(responseData);

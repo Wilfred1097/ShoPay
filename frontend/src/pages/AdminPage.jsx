@@ -63,7 +63,7 @@ function AdminPage() {
         profile_pic: updateUserData.profile_pic,
       };
   
-      const response = await axios.put(`http://localhost:3000/update/${tableName}/${primaryKey}`, updateData);
+      const response = await axios.put(`https://shopay-backend-git-main-wilfred1097.vercel.app/update/${tableName}/${primaryKey}`, updateData);
   
       if (response && response.data && response.data.Status === `${tableName} record updated successfully`) {
         alert(response.data.Status);
@@ -116,7 +116,7 @@ function AdminPage() {
         product_qty: updateProductData.product_qty,
       };
   
-      const response = await axios.put(`http://localhost:3000/update/${tableName}/${primaryKey}`, updateData);
+      const response = await axios.put(`https://shopay-backend-git-main-wilfred1097.vercel.app/update/${tableName}/${primaryKey}`, updateData);
   
       if (response && response.data && response.data.Status === `${tableName} record updated successfully`) {
         alert(response.data.Status);
@@ -141,7 +141,7 @@ function AdminPage() {
   
     try {
       await productSchema.validate(values, { abortEarly: false });
-      const response = await axios.post('http://localhost:3000/add_product', values);
+      const response = await axios.post('https://shopay-backend-git-main-wilfred1097.vercel.app/add_product', values);
   
       if (response && response.data && response.data.Status === 'Product added successfully') {
         alert(response.data.Status);
@@ -179,7 +179,7 @@ function AdminPage() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    fetch('http://localhost:3000/logout', {
+    fetch('https://shopay-backend-git-main-wilfred1097.vercel.app/logout', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -202,7 +202,7 @@ function AdminPage() {
 
   const handleDelete = async (itemId, itemType) => {
     try {
-      const response = await axios.delete(`http://localhost:3000/delete/${itemType}/${itemId}`);
+      const response = await axios.delete(`https://shopay-backend-git-main-wilfred1097.vercel.app/delete/${itemType}/${itemId}`);
   
       console.log('Delete Response:', response);
   
@@ -226,7 +226,7 @@ function AdminPage() {
   
 
   useEffect(() => {
-    fetch('http://localhost:3000/data')
+    fetch('https://shopay-backend-git-main-wilfred1097.vercel.app/data')
       .then((response) => response.json())
       .then((responseData) => {
         setUserData(responseData);
@@ -237,7 +237,7 @@ function AdminPage() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3000/product')
+    fetch('https://shopay-backend-git-main-wilfred1097.vercel.app/product')
       .then((response) => response.json())
       .then((responseData) => {
         setProductData(responseData);

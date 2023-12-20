@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-    origin: ["https://sho-pay-client.vercel.app"],
+    origin: ["https://shopay-client.vercel.app"],
     methods: ["POST", "GET", "PUT" ],
     credentials: true
 }));

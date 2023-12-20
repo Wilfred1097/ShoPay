@@ -32,8 +32,8 @@ const authenticateToken = (req, res, next) => {
 
 const app = express();
 app.use(cors({
-  origin: ["http://localhost:5173"],
-  methods: ["POST", "GET", "PUT" ],
+  origin: "*",
+  methods: ["POST", "GET", "PUT"],
   credentials: true
 }));
 const port = 3000;
